@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed de Noticias de Eurogamer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .feed-container {
+            margin-top: 20px;
+        }
+        .feed-item {
+            margin-bottom: 10px;
+        }
+        .feed-item a {
+            text-decoration: none;
+            color: #1a73e8;
+        }
+        .feed-item a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Noticias de Eurogamer</h1>
+    <div id="feed-container" class="feed-container">
+        Cargando noticias...
+    </div>
+
+    <script>
+        const feedUrl = 'rss_feed.xml'; // Cambia esto con la URL real de tu feed RSS
+
+        async function fetchRSS() {
+            try {
+                const response = await fetch(feedUrl);
+                const text = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, 'text/xml');
+                const items = xmlDoc.getElementsByTagName('item');
+
+                const feedContainer = document.getElementById('feed-container');
+                feedContainer.innerHTML = '';
+
+                for (let i = 0; i < items.length; i++) {
+                    const title = items[i].getElementsByTagName('title')[0].textContent;
+                    const link = items[i].getElementsByTagName('link')[0].textContent;
+
+                    const itemElement = document.createElement('div');
+                    itemElement.className = 'feed-item';
+                    itemElement.innerHTML = `<a href="${link}" target="_blank">${title}</a>`;
+                    feedContainer.appendChild(itemElement);
+                }
+            } catch (error) {
+                console.error('Error al cargar el RSS:', error);
+                document.getElementById('feed-container').textContent = 'Error al cargar las noticias.';
+            }
+        }
+
+        fetchRSS();
+    </script>
+</body>
+</html>
